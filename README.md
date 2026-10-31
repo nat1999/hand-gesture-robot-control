@@ -2,7 +2,12 @@
 
 Este proyecto detecta la mano en tiempo real con la cámara usando **MediaPipe** y **OpenCV** en Python, cuenta cuántos dedos están levantados y usa ese número para **mover un robot TurtleBot2 con ROS 2**.
 
-El proyecto está armado por pasos: cada script agrega algo nuevo sobre el anterior, así se puede seguir el avance desde lo más simple (ver la mano) hasta lo más completo (mover el robot).
+El proyecto tiene 4 scripts. Cada uno hace lo mismo que el anterior y le suma una cosa más:
+
+1. Ver la mano en la cámara.
+2. Saber qué dedos están levantados.
+3. Contar cuántos dedos hay levantados.
+4. Mover el robot según ese número.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/54ffccfe-7dff-40dd-b8ec-c37ab5c5e13f" height="250"/>
