@@ -1,0 +1,4 @@
+# mediapipe 0.10.14 todavía trae mp.solutions, las versiones nuevas no
+mediapipe==0.10.14
+opencv-python
+pytest
