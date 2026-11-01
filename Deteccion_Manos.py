@@ -17,12 +17,18 @@ hands = mp_hands.Hands(static_image_mode=False,
 mp_draw = mp.solutions.drawing_utils
 
 # Inicializar la cámara
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
+# Con MJPG y 320x240 la imagen no sale verde ni negra en WSL
+cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
+    # Se agranda para que el texto quepa
+    frame = cv2.resize(frame, (640, 480))
 
     # Convertir la imagen de BGR a RGB
     img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
