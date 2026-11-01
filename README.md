@@ -95,17 +95,22 @@ Cada dedo levantado suma 1. El resultado es un número del 0 al 5, y ese número
 
 ### Paso 4 — Mover el robot (`Control_Robot.py`)
 
-Aquí el número de dedos se convierte en una orden para el TurtleBot2:
+Aquí el número de dedos se convierte en una orden para el TurtleBot2. Solo importa **cuántos** dedos hay arriba, no cuáles. Cada número tiene una velocidad fija:
 
-| Dedos | Acción del robot |
-|:---:|---|
-| ✊ 0 | Detenido |
-| ☝️ 1 | Avanzar |
-| ✌️ 2 | Retroceder |
-| 🤟 3 | Girar a la izquierda |
-| 🖖 4 | Girar a la derecha |
-| 🖐️ 5 | Detenido |
-| Sin mano | Detenido |
+| Dedos | `linear.x` (m/s) | `angular.z` (rad/s) | Acción del robot |
+|:---:|:---:|:---:|---|
+| ✊ 0 | 0 | 0 | Detenido |
+| ☝️ 1 | 0.15 | 0 | Avanzar |
+| ✌️ 2 | -0.15 | 0 | Retroceder |
+| 🤟 3 | 0 | 0.6 | Girar a la izquierda |
+| 🖖 4 | 0 | -0.6 | Girar a la derecha |
+| 🖐️ 5 | 0 | 0 | Detenido |
+| Sin mano | 0 | 0 | Detenido |
+
+- `linear.x` es la velocidad hacia adelante. Si es negativa, el robot va hacia atrás.
+- `angular.z` es la velocidad de giro. Si es positiva gira a la izquierda, si es negativa a la derecha.
+- La velocidad no cambia con la mano, siempre es la misma. Para cambiarla se usan los parámetros `linear_speed` y `angular_speed`.
+- El robot se mueve mientras mantengas el gesto. Si bajas la mano, se detiene.
 
 Cómo lo hace:
 
