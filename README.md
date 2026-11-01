@@ -191,10 +191,28 @@ En WSL la cámara solo funcionó bien con formato **MJPG a 320x240**, por eso so
 
 ## ✅ Pruebas
 
-Las pruebas revisan `contar_dedos()` con manos inventadas (puño, 1, 2, 4 y 5 dedos, y mano izquierda), así que no necesitan cámara:
+La prueba está en [`test/test_contar_dedos.py`](test/test_contar_dedos.py). No usa la cámara: arma a mano los 21 puntos de una mano falsa (función `mano()`), se los pasa a `contar_dedos()` de `Control_Robot.py` y revisa que el número sea el correcto (puño = 0, índice = 1, índice y medio = 2, cuatro dedos = 4, mano abierta = 5, y también la mano izquierda con `espejo()`).
+
+Para correrla:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest test
+source /opt/ros/humble/setup.bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest test -v
+```
+
+Resultado en la terminal:
+
+```
+collected 6 items
+
+test/test_contar_dedos.py::test_puno PASSED                              [ 16%]
+test/test_contar_dedos.py::test_un_dedo PASSED                           [ 33%]
+test/test_contar_dedos.py::test_dos_dedos PASSED                         [ 50%]
+test/test_contar_dedos.py::test_cuatro_dedos PASSED                      [ 66%]
+test/test_contar_dedos.py::test_palma_abierta PASSED                     [ 83%]
+test/test_contar_dedos.py::test_mano_izquierda PASSED                    [100%]
+
+============================== 6 passed in 2.79s ===============================
 ```
 
 ## 🚀 Aplicaciones
