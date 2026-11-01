@@ -1,13 +1,14 @@
 # 🖐️ Detección de Manos y Dedos con MediaPipe
 
-Este proyecto detecta la mano en tiempo real con la cámara usando **MediaPipe** y **OpenCV** en Python, cuenta cuántos dedos están levantados y usa ese número para **mover un robot TurtleBot2 con ROS 2**.
+Este proyecto permite detectar y reconocer los movimientos de la mano en tiempo real mediante una cámara, utilizando MediaPipe y OpenCV en Python. A partir de esta detección, identifica y cuenta la cantidad de dedos levantados, utilizando este número como señal de control para mover un robot TurtleBot2 mediante ROS 2.
 
-El proyecto tiene 4 scripts. Cada uno hace lo mismo que el anterior y le suma una cosa más:
+El proyecto está compuesto por cuatro scripts:
 
-1. Ver la mano en la cámara.
-2. Saber qué dedos están levantados.
-3. Contar cuántos dedos hay levantados.
-4. Mover el robot según ese número.
+1. **Detección de la mano:** captura y visualización de la mano en tiempo real mediante la cámara.
+2. **Identificación de dedos:** reconoce cuáles dedos se encuentran levantados.
+3. **Conteo de dedos:** determina la cantidad de dedos levantados.
+4. **Control del robot:** utiliza el número de dedos detectados para generar los comandos de movimiento del TurtleBot2 mediante ROS 2.
+
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/54ffccfe-7dff-40dd-b8ec-c37ab5c5e13f" height="250"/>
@@ -26,22 +27,49 @@ El proyecto tiene 4 scripts. Cada uno hace lo mismo que el anterior y le suma un
 
 ## 🧠 Cómo funciona
 
-MediaPipe encuentra la mano en cada imagen de la cámara y devuelve **21 puntos clave** (*landmarks*). Cada punto tiene un número:
+### 1. MediaPipe marca la mano con puntos
+
+En cada imagen de la cámara, MediaPipe encuentra la mano y le pone **21 puntos** (*landmarks*): uno en la muñeca y cuatro en cada dedo. Cada punto tiene un número y una posición en la imagen (`x`, `y`).
+
+Para saber si un dedo está levantado solo se usan algunos de esos puntos: la **punta** de cada dedo y una **articulación** más abajo.
 
 ```
-        8   12  16  20      ← puntas
-        |   |   |   |
-        6   10  14  18      ← articulaciones
-        |   |   |   |
-   4    5---9---13--17
-    \  /
-     3        0             ← muñeca
+         8   12   16   20      ← puntas
+         |    |    |    |
+         6   10   14   18      ← articulaciones
+         |    |    |    |
+   4     5----9---13---17
+    \   /
+     3 /
+      \       0                ← muñeca
 ```
 
-- **Dedos índice, medio, anular y meñique:** si la punta está más arriba que la articulación (su `y` es menor), el dedo está levantado. Por ejemplo, el índice compara el punto 8 con el 6.
-- **Pulgar:** se mueve de lado, entonces se compara en el eje `x`. Se mira si la punta (4) está más lejos del meñique (17) que el nudillo (3).
+### 2. Se revisa cada dedo
 
-> En la imagen el eje `y` crece hacia abajo, por eso "más arriba" significa un `y` más pequeño.
+**Índice, medio, anular y meñique.** Cuando el dedo está estirado, la punta queda por encima de la articulación. Cuando está doblado, la punta baja.
+
+Entonces se compara la altura (`y`) de los dos puntos:
+
+| Dedo | Punta | Articulación |
+|---|:---:|:---:|
+| Índice | 8 | 6 |
+| Medio | 12 | 10 |
+| Anular | 16 | 14 |
+| Meñique | 20 | 18 |
+
+Si la punta está más arriba que la articulación, el dedo cuenta como **levantado**.
+
+**Pulgar.** El pulgar no sube y baja como los otros, se abre hacia el lado. Por eso no se mira la altura sino la distancia horizontal (`x`):
+
+- Se mide qué tan lejos está la punta del pulgar (4) del meñique (17).
+- Se mide qué tan lejos está el nudillo del pulgar (3) del meñique (17).
+- Si la punta está más lejos que el nudillo, el pulgar está **abierto**.
+
+Como se mide una distancia y no un lado, funciona igual con la mano derecha y con la izquierda.
+
+### 3. Se suman los dedos
+
+Cada dedo levantado suma 1. El resultado es un número del 0 al 5, y ese número es el que se usa para mover el robot.
 
 ## 🪜 Paso a paso
 
@@ -58,8 +86,6 @@ MediaPipe encuentra la mano en cada imagen de la cámara y devuelve **21 puntos 
 1. Igual que el paso 1, pero con una sola mano.
 2. Los puntos se pasan a coordenadas en píxeles (`x`, `y`) y se guardan en una lista.
 3. Se revisa cada dedo con la regla de arriba y se escribe en pantalla, por ejemplo *"Indice levantado"* o *"Medio bajado"*.
-
-> En este paso el pulgar solo se calcula bien con la **mano derecha**. En el paso 4 se corrigió para que sirva con las dos.
 
 ### Paso 3 — Contar los dedos (`Conteo_Dedos.py`)
 
